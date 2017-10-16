@@ -46,12 +46,31 @@ int main(void)
 ISR(TIMER0_COMPA_vect)
 {
 	static uint16_t i = 0;
+	static uint16_t ms = 0;
+	static uint8_t s = 0;
+	static uint8_t min = 0;
+	
 	char string [50] = "";
+	
 	i++;
-	if(i==10000)
+	if(i==10)
 	{
-		snprintf(string,sizeof(string),"%d",(int)i);
-		txRx.sendXData(string);
+		ms++;
+		if(ms>=1000)
+		{
+			ms=0;
+			s++;
+			if(s>=60)
+			{
+				s=0;
+				min++;
+			}
+		}
+		if(ms%10 == 0)
+		{
+			snprintf(string,sizeof(string),"\r%3d min:%3d s:%3d ms\r",(int)min,(int)s,(int)ms);
+			txRx.sendXData(string);
+		}
 		i=0;
 	}
 }
